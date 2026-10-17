@@ -1,0 +1,32 @@
+# Secrets: never commit real env files (the .example files are tracked)
+.env
+.env.*
+!.env.example
+
+# Real client files (statements, invoices, Amazon reports). Never commit.
+# The folder itself is kept (.gitkeep) so it exists after a clone.
+backend/tests/fixtures_private/*
+!backend/tests/fixtures_private/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+
+# Node / frontend
+node_modules/
+dist/
+*.tsbuildinfo
+.vite/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,0 +1,128 @@
+date,ser_no,description,amount_inr,files,status,notes
+11/06/2026,13576983915,Late Payment Fee,1300.00,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+11/06/2026,13576983923,SGST-CI@9%,117.00,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+11/06/2026,13576983933,CGST-CI@9%,117.00,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+28/06/2026,13685482676,Interest Charges,64735.74,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+28/06/2026,13685482689,SGST-CI@9%,5826.22,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+28/06/2026,13685482711,CGST-CI@9%,5826.22,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+21/05/2026,13462021874,ASSPL Bangalore IN,1225.50,,Missing invoice,Charged in May (statement period starts 21 May); the invoice set supplied covers June only.
+21/05/2026,13463193979,SUPABASE SINGAPORE SG*  [86.12 USD],8695.94,,Missing invoice,Charged in May (statement period starts 21 May); the invoice set supplied covers June only.
+21/05/2026,13463194859,FATHOM.VIDEO FATHOM.VIDEO US*  [36 USD],3635.09,,Missing invoice,Charged in May (statement period starts 21 May); the invoice set supplied covers June only.
+25/05/2026,13484713781,MICROSOFT CYBS SI MUMBAI IN,6899.00,,Missing invoice,Charged in May (statement period starts 21 May); the invoice set supplied covers June only.
+27/05/2026,13488732741,OPENAI *CHATGPT SUBSCR OPENAI.COM US,1694.07,,Missing invoice,Charged in May (statement period starts 21 May); the invoice set supplied covers June only.
+27/05/2026,13488861112,DCC Fee,59.29,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+27/05/2026,13488861118,SGST-CI@9%,5.34,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+27/05/2026,13488861132,CGST-CI@9%,5.34,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+26/05/2026,13489171366,MACFOS LIMITED MUMBAI IN,4562.00,,Missing invoice,Charged in May (statement period starts 21 May); the invoice set supplied covers June only.
+26/05/2026,13489413051,MACFOS LIMITED MUMBAI IN,10496.00,,Missing invoice,Charged in May (statement period starts 21 May); the invoice set supplied covers June only.
+26/05/2026,13489692223,ASSPL Bangalore IN,554.84,,Missing invoice,Charged in May (statement period starts 21 May); the invoice set supplied covers June only.
+28/05/2026,13493961278,FATHOM.VIDEO FATHOM.VIDEO US*  [20 USD],1995.18,,Missing invoice,Charged in May (statement period starts 21 May); the invoice set supplied covers June only.
+28/05/2026,13500437493,MACFOS LIMITED MUMBAI IN,1049.00,,Missing invoice,Charged in May (statement period starts 21 May); the invoice set supplied covers June only.
+27/05/2026,13501034638,ROYAL CHINA DIV PALLADIAN MUMBAI IN,3956.00,,No invoice,No invoice supplied for this merchant
+28/05/2026,13502354256,VERCEL INC. VERCEL.COM US*  [20 USD],1995.18,,Missing invoice,Charged in May (statement period starts 21 May); the invoice set supplied covers June only.
+30/05/2026,13513665287,SWIGGY GINIE BENGALURU IN,-2008.00,,Reversed,Reverses the charge on 30/05/2026 (SerNo 13513788899)
+30/05/2026,13513788899,SWIGGY GINIE BENGALURU IN,2008.00,,Reversed,Reversed by credit on 30/05/2026 (SerNo 13513665287); no invoice needed
+30/05/2026,13513891751,Swiggy BANGALORE IN,225.00,,No invoice,No invoice supplied for this merchant
+30/05/2026,13514219614,SWIGGY BANGALORE IN,2330.00,,No invoice,No invoice supplied for this merchant
+01/06/2026,13525094801,WWW DTDC IN BANGALORE IN,769.00,010626_DTDC_769.png,Matched,Exact INR amount
+03/06/2026,13538266960,GOOGLE CLOUD CYBS SI MUMBAI IN,8778.16,,Missing invoice,No invoice with this amount was supplied.
+03/06/2026,13538346030,INDIGO AIRLINE GURGAON IN,16734.00,"TaxInvoiceDL1262706AT38326.pdf, TaxInvoiceMH1262706AY53125.pdf",Matched,2 invoices sum exactly to the charge
+04/06/2026,13543065589,MACFOS LIMITED MUMBAI IN,267.00,050626_Macfos_267.pdf,Matched,Exact INR amount
+04/06/2026,13543618697,ASSPL Bangalore IN,2955.00,040626_Amazon_2955.pdf,Matched,Exact amount
+04/06/2026,13543994330,INDIGO AIRLINE GURGAON IN,17261.00,"TaxInvoiceMH1262706AY75969.pdf, TaxInvoiceWB1262706AJ54054.pdf",Matched,2 invoices sum exactly to the charge
+05/06/2026,13548967009,ZAPIER.COM/CHARGE ZAPIER.COM US*  [133.5 USD],13317.53,Zapier-june.pdf,Matched,USD 133.5 matches invoice
+05/06/2026,13548969752,Phantombuster Paris FR*  [69 USD],6883.21,,Missing invoice,No invoice with this amount was supplied.
+05/06/2026,13548975360,GENSPARK.AI SINGAPORE SG,1733.27,Genspark_$17.49.pdf,Review,Only invoice from this vendor near this date; it is in USD and the statement shows INR only
+06/06/2026,13549120128,DCC Fee,60.66,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+06/06/2026,13549120131,SGST-CI@9%,5.46,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+06/06/2026,13549120137,CGST-CI@9%,5.46,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+06/06/2026,13558103213,SCRIPTIT.FR/CANCEL PARIS FR*  [8.99 USD],896.69,ScriptIt.pdf,Matched,USD 8.99 matches invoice
+06/06/2026,13558105225,SCRIPTIT.FR/CANCEL PARIS FR*  [8.99 USD],896.69,,Review,Second identical ₹896.69 ScriptIt charge on the same day; only one ScriptIt invoice was supplied. Possible duplicate charge.
+07/06/2026,13562031775,TRIPIFY PVT LTD new delhi IN,54116.08,TFY336123_336027.pdf,Matched,Exact INR amount
+07/06/2026,13562235353,INDIGO AIRLINE GURGAON IN,15846.00,"TaxInvoiceDL1262706AU17753.pdf, TaxInvoiceMH1262706AZ48672.pdf",Review,"Unused IndiGo invoices for PNR EBU8WT total ₹16,581, which is ₹735 more than the charge (possible seat/meal change or partial refund)."
+07/06/2026,13562296227,MAKEMYTRIP INDIA PVT L NEW DELHI IN,94146.00,Lemon tree_94146.pdf,Matched,Exact INR amount
+07/06/2026,13562505147,INDIGO AIRLINE GURGAON IN,13079.00,"TaxInvoiceMH1262706AZ69244.pdf, TaxInvoiceUP1262706AG47449.pdf",Matched,2 invoices sum exactly to the charge
+07/06/2026,13562532936,WWW DTDC IN BANGALORE IN,215.00,DTDC_215.pdf,Matched,INR amount within Rs 1 (paise rounding on invoice)
+08/06/2026,13567436787,MACFOS LIMITED MUMBAI IN,422.00,080626_Macfos_422.pdf,Matched,Exact INR amount
+08/06/2026,13567542990,MACFOS LIMITED MUMBAI IN,2754.00,080626_Macfos_2754.pdf,Matched,Exact INR amount
+08/06/2026,13567764471,ATR FOODS LLP SOUTH WEST DE IN,314.00,,No invoice,No invoice supplied for this merchant
+08/06/2026,13568256522,WWW DTDC IN BANGALORE IN,480.00,080626_DTDC_480.png,Matched,Exact INR amount
+08/06/2026,13568373034,ATLANTIS ROBOTICS PRIV NEW DELHI IN,124.99,080626_thinkrobotics_124.99.png,Matched,Exact INR amount
+09/06/2026,13572527526,FIBROHEAL07 BANGALORE G.P IN,5050.00,,No invoice,No invoice supplied for this merchant
+09/06/2026,13573415572,GOOGLE CLOUDS MUMBAI IN,1000.00,CLOUD.png,Matched,Exact INR amount
+09/06/2026,13573537730,ASSPL Bangalore IN,6624.00,"090626_Amazon_585.pdf, 090626_Amazon_6039.pdf",Matched,2 invoices sum exactly to the charge
+09/06/2026,13573731487,WWW DTDC IN BANGALORE IN,488.00,DTDC_488.pdf,Matched,Exact INR amount
+10/06/2026,13575332246,PERISKOPE PERISKOPE.APP US,9600.00,Periskope_9600.pdf,Matched,Exact INR amount
+10/06/2026,13575420152,DCC Fee,336.00,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+10/06/2026,13575420156,SGST-CI@9%,30.24,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+10/06/2026,13575420169,CGST-CI@9%,30.24,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+10/06/2026,13578455906,CLICK TO PAY PAYMENT RECEIVED,-60472.00,,Payment,Card bill payment
+10/06/2026,13583684421,WWW DTDC IN BANGALORE IN,1124.00,DTDC_1124.png,Matched,Exact INR amount
+11/06/2026,13586061000,AMAZONIN GURGAON IN,269.00,110626_Amazon_269.pdf,Matched,Exact amount
+11/06/2026,13586393000,ASSPL Bangalore IN,726.00,"110626_Amazon_157.pdf, 110626_Amazon_201.pdf, 110626_Amazon_368.pdf",Matched,3 invoices sum exactly to the charge
+11/06/2026,13586527186,WWW DTDC IN BANGALORE IN,623.00,DTDC_623.png,Matched,Exact INR amount
+12/06/2026,13592877622,ASSPL Bangalore IN,284.00,120626_Amazon_284.pdf,Matched,Exact amount
+12/06/2026,13592885690,ASSPL Bangalore IN,105980.00,120626_Amazon_105980.pdf,Matched,Exact amount
+12/06/2026,13592897886,ASSPL Bangalore IN,-52990.00,,Credit – manual,Refund or credit; handled manually by the client
+12/06/2026,13592900041,ASSPL Bangalore IN,-149.00,,Credit – manual,Refund or credit; handled manually by the client
+12/06/2026,13592943880,ASSPL Bangalore IN,53139.00,,Review,"Equals the two Amazon credits the same day (₹52,990 + ₹149). Likely a re-charge after the ₹1,05,980 order was changed. No separate invoice supplied."
+12/06/2026,13593129438,WWW DTDC IN BANGALORE IN,770.00,DTDC_770.pdf,Matched,INR amount within Rs 1 (paise rounding on invoice)
+12/06/2026,13593362938,WWW DTDC IN GURGAON IN,240.00,DTDC_240.png,Matched,Exact INR amount
+12/06/2026,13593368496,WWW DTDC IN BANGALORE IN,510.00,DTDC_510.png,Matched,Exact INR amount
+12/06/2026,13593553236,WWW AIRTEL IN SI NEW DELHI IN,273.46,Airtel.pdf,Matched,Exact INR amount
+13/06/2026,13597679812,MACFOS LIMITED MUMBAI IN,5559.00,130626_Macfos_5559.pdf,Matched,Exact INR amount
+13/06/2026,13598184078,ASSPL Bangalore IN,2557.44,"130626_Amazon_187.16(2).pdf, 130626_Amazon_198.pdf, 130626_Amazon_220.pdf, 130626_Amazon_238.pdf, 130626_Amazon_499.pdf, 130626_Amazon_928.27.pdf, 130626_Amazon_98.01.pdf, 130626_amazon_189(1).pdf",Matched,8 invoices sum exactly to the charge
+13/06/2026,13598194425,ASSPL Bangalore IN,400.82,,Reversed,Reversed by credit on 17/06/2026 (SerNo 13630061944); no invoice needed
+13/06/2026,13598245136,ASSPL Bangalore IN,-2553.60,,Credit – manual,Refund or credit; handled manually by the client
+13/06/2026,13600187680,Mailchimp 678-9990141 US,3069.59,mailchimp-receipt-MC26118597.pdf,Matched,Exact INR amount
+13/06/2026,13600190073,ANTHROPIC* CLAUDE SUB ANTHROPIC.COM US*  [20 USD],1989.60,Anthropic_PBC_20USD.pdf,Matched,USD 20 matches invoice
+14/06/2026,13600285721,DCC Fee,107.44,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+14/06/2026,13600285727,SGST-CI@9%,9.67,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+14/06/2026,13600285738,CGST-CI@9%,9.67,,Bank charge,Card fee or GST on a fee; no vendor invoice.
+14/06/2026,13605051417,MACFOS LIMITED MUMBAI IN,24407.00,140626_Macfos_24407.pdf,Matched,Exact INR amount
+14/06/2026,13605057527,MACFOS LIMITED MUMBAI IN,483.00,140626_Macfos_483.pdf,Matched,Exact INR amount
+14/06/2026,13605137811,MACFOS LIMITED MUMBAI IN,1981.00,140626_Macfos_1981.pdf,Matched,Exact INR amount
+14/06/2026,13605660075,ASSPL Bangalore IN,5078.63,"140626_Amazon_228.pdf, 140626_Amazon_4028(1).pdf, 140626_Amazon_649(2).pdf, 140626_Amazon_173.63.png",Matched,4 invoices sum exactly to the charge
+14/06/2026,13605670745,ASSPL Bangalore IN,1018.00,"140626_Amazon_249.pdf, 140626_Amazon_309.pdf, 140626_Amazon_460.pdf",Matched,3 invoices sum exactly to the charge
+14/06/2026,13605716170,ASSPL Bangalore IN,7193.19,"140626_Amazon_525(1).pdf, 140626_Amazon_585.19(3).pdf, 140626_Amazon_5984(2).pdf, 140626_Amazon_99.png",Matched,4 invoices sum exactly to the charge
+15/06/2026,13610763266,IND*VISTAPRINT HTTPS://WWW.V IN,19152.00,VP_X94Q1283_invoices.pdf,Matched,Exact INR amount
+15/06/2026,13610764214,IND*VISTAPRINT HTTPS://WWW.V IN,9100.00,VP_02ZPZZRD_invoices.pdf,Matched,Exact INR amount
+16/06/2026,13617173117,MACFOS LIMITED MUMBAI IN,1033.00,160626_Macfos_1033.pdf,Matched,Exact INR amount
+16/06/2026,13617723799,AMAZONIN GURGAON IN,416.00,160626_Amazon_416.pdf,Matched,Exact amount
+16/06/2026,13617786749,WWW DTDC IN BANGALORE IN,522.00,DTDC_522.png,Matched,Exact INR amount
+17/06/2026,13619311367,VERCEL INC. VERCEL.COM US*  [20 USD],1972.89,Vercel_20USD.pdf,Matched,USD 20 matches invoice
+17/06/2026,13622289292,WIX.COM 1245720091 NEW DELHI IN,2807.16,,Missing invoice,No invoice with this amount was supplied.
+17/06/2026,13622564208,MACFOS LIMITED MUMBAI IN,-293.00,,Credit – manual,Refund or credit; handled manually by the client
+17/06/2026,13622806713,MACFOS LIMITED MUMBAI IN,1766.00,180626_Macfos_1766.pdf,Matched,Exact INR amount
+17/06/2026,13623094530,ASSPL Bangalore IN,698.00,"170626_Amazon_340.pdf, 170626_Amazon_358.pdf",Matched,2 invoices sum exactly to the charge
+17/06/2026,13623625181,GOOGLE CLOUDS MUMBAI IN,5000.00,Google_5000.png,Matched,Exact INR amount
+18/06/2026,13629193508,MACFOS LIMITED MUMBAI IN,1205.00,190626_MAcfos_1205.pdf,Matched,Exact INR amount
+18/06/2026,13629230456,MACFOS LIMITED MUMBAI IN,611.00,190626_Macfos_715.pdf,Matched,Exact INR amount Invoice total is ₹611; the file is named 715.
+17/06/2026,13630061944,ASSPL Bangalore IN,-400.82,,Reversed,Reverses the charge on 13/06/2026 (SerNo 13598194425)
+18/06/2026,13630084789,AQTRONICS TECHNOLOGIES Bangalore IN,10484.00,AqTronics_10484.pdf,Matched,Exact INR amount
+19/06/2026,13633743372,CALENDLY CALENDLY.COM US*  [28.32 USD],2793.18,,Missing invoice,No invoice with this amount was supplied.
+19/06/2026,13633750511,RAILWAY RAILWAY.COM US*  [39.43 USD],3888.97,Railway_39.43USD.pdf,Matched,USD 39.43 matches invoice
+19/06/2026,13634462438,ASSPL Bangalore IN,2205.20,"190626_Amazon_151.pdf, 190626_Amazon_165.pdf, 190626_Amazon_309.pdf, 190626_Amazon_473(2).pdf, 190626_Amazon_473.pdf, 190626_Amazon_634.20.pdf",Matched,6 invoices sum exactly to the charge
+19/06/2026,13634979143,MACFOS LIMITED MUMBAI IN,715.01,,Missing invoice,No invoice with this amount was supplied.
+20/06/2026,13642448945,CREATED ANDHERI WEST IN,472000.00,,Reversed,Reversed by credit on 20/06/2026 (SerNo 13642459365); no invoice needed
+20/06/2026,13642451260,CREATED ANDHERI WEST IN,200.00,,Reversed,Reversed by credit on 20/06/2026 (SerNo 13642456881); no invoice needed
+20/06/2026,13642456881,CREATED ANDHERI WEST IN,-200.00,,Reversed,Reverses the charge on 20/06/2026 (SerNo 13642451260)
+20/06/2026,13642459365,CREATED ANDHERI WEST IN,-472000.00,,Reversed,Reverses the charge on 20/06/2026 (SerNo 13642448945)
+20/06/2026,13642487920,ASSPL Bangalore IN,999.00,200626_Amazon_999.pdf,Matched,Exact amount
+20/06/2026,13642517948,ASSPL Bangalore IN,52539.00,200626_Amazon_52390.pdf,Review,"Closest Amazon invoice (₹52,390, 20 Jun) is ₹149 less than the charge. Check whether a ₹149 item was added to this order."
+20/06/2026,13642943391,MAKEMYTRIP INDIA PVT L NEW DELHI IN,22781.00,Lemon Tree_22781.pdf,Matched,Exact INR amount
+21/06/2026,13647499190,SUPABASE SINGAPORE SG*  [122.25 USD],12036.13,Supabase_.pdf,Matched,USD 122.25 matches invoice
+21/06/2026,13647505360,FATHOM.VIDEO FATHOM.VIDEO US*  [36 USD],3544.37,Fathom $36.pdf,Matched,USD 36 matches invoice
+21/06/2026,13647506424,VERCEL INC. VERCEL.COM US*  [20 USD],1969.11,,Missing invoice,"Second Vercel charge this month; only one Vercel invoice (17 Jun, used for the 17/06 charge) was supplied."
+24/06/2026,13664502607,MACFOS LIMITED MUMBAI IN,1365.00,240626_Macfos_1365.pdf,Matched,Exact INR amount
+24/06/2026,13665171852,ASSPL Bangalore IN,7623.88,"240626_Amazon_139.pdf, 240626_Amazon_1599.pdf, 240626_Amazon_301.90.pdf, 240626_Amazon_314.pdf, 240626_Amazon_5269.98.pdf",Matched,5 invoices sum exactly to the charge
+25/06/2026,13669915800,MACFOS LIMITED MUMBAI IN,9844.00,250626_Macfos_9844.pdf,Matched,Exact INR amount
+25/06/2026,13669962062,MACFOS LIMITED MUMBAI IN,474.00,250626_Macfos_474.pdf,Matched,Exact INR amount
+25/06/2026,13670455943,SHOTT AMUSEMENT PVT LTD Surat IN,8787.00,CREATED-8787.pdf,Matched,Exact INR amount
+25/06/2026,13670459498,SHOTT AMUSEMENT PVT LTD Surat IN,6877.00,,Missing invoice,"No invoice for ₹6,877. The unused Shott invoice CREATED-25947.pdf is ₹25,947, a different amount."
+25/06/2026,13670590021,ASSPL Bangalore IN,702.00,"250626_Amazon_149.pdf, 250626_Amazon_199.pdf, 250626_Amazon_354.pdf",Matched,3 invoices sum exactly to the charge
+27/06/2026,13681394419,MACFOS LIMITED MUMBAI IN,16002.00,270626_Macfos_16002.pdf,Matched,Exact INR amount
+27/06/2026,13681396237,MACFOS LIMITED MUMBAI IN,2400.00,,Missing invoice,No invoice with this amount was supplied.
+27/06/2026,13681621627,SWATI SNACKS MUMBAI IN,8562.00,,No invoice,No invoice supplied for this merchant
+27/06/2026,13681969754,ASSPL Bangalore IN,129.00,270626_Amazon_129.pdf,Matched,Exact amount
+27/06/2026,13682028837,RoboCraze BANGALORE NOR IN,569.00,,Missing invoice,No invoice with this amount was supplied.

@@ -1,0 +1,19 @@
+# Railway "config as code" for the API. In the Railway service settings set Root Directory to `backend`
+# so this file and the Dockerfile are found. No secret belongs in this file: every value (Supabase, Anthropic,
+# ALLOWED_EMAILS, CORS_ORIGINS) is a Railway Variable that the owner sets in the Railway dashboard.
+# See doc/runbook.md.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+# Railway builds the LAST stage of the Dockerfile. That is `runtime` (no test packages); a test keeps it so.
+
+[deploy]
+# The container listens on $PORT (set by Railway); the Dockerfile's CMD reads it.
+healthcheckPath = "/api/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
+# One replica only: background jobs (statement, invoices, matching) run inside the API process and their
+# lock lives in the database. Do not scale this out without moving the jobs to a queue.
+numReplicas = 1

@@ -1,0 +1,34 @@
+# Local helpers. Nothing here is used in production (the API is deployed from backend/Dockerfile).
+#
+#   docker compose up --build api        run the API on http://localhost:8000
+#   docker compose run --rm tests        run pytest inside the container (poppler available)
+#   docker compose run --rm tests pdftotext -v
+
+services:
+  api:
+    build:
+      context: ./backend
+      target: runtime
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: ./backend/.env
+        required: false
+
+  tests:
+    build:
+      context: ./backend
+      target: test
+    working_dir: /app
+    volumes:
+      # Real client files come in through the ./backend mount (tests/fixtures_private).
+      - ./backend:/app
+      # Reference data (expected results, September lines), read-only.
+      - ./doc:/doc:ro
+      # The vendor seed (migration 0003) is the source of the invoice patterns the tests use.
+      - ./supabase:/supabase:ro
+    env_file:
+      - path: ./backend/.env
+        required: false
+    command: ["pytest"]
+    profiles: ["tests"]

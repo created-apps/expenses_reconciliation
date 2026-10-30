@@ -1,0 +1,23 @@
+# Text files are stored with LF line endings and treated as UTF-8.
+* text=auto eol=lf
+
+*.ts    text eol=lf working-tree-encoding=UTF-8
+*.tsx   text eol=lf working-tree-encoding=UTF-8
+*.js    text eol=lf working-tree-encoding=UTF-8
+*.json  text eol=lf working-tree-encoding=UTF-8
+*.css   text eol=lf working-tree-encoding=UTF-8
+*.html  text eol=lf working-tree-encoding=UTF-8
+*.py    text eol=lf working-tree-encoding=UTF-8
+*.sql   text eol=lf working-tree-encoding=UTF-8
+*.md    text eol=lf working-tree-encoding=UTF-8
+*.yml   text eol=lf working-tree-encoding=UTF-8
+*.toml  text eol=lf working-tree-encoding=UTF-8
+*.csv   text eol=lf working-tree-encoding=UTF-8
+
+# Real files and binaries: never convert.
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.zip   binary
+*.woff2 binary

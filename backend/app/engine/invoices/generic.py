@@ -23,7 +23,8 @@ TOTAL_LABELS: list[tuple[str, str, bool]] = [
     (r"Paid\s+Amount|Amount\s+Paid", "first", False),
     # A heading with the values on the rows below it (e-invoices: "Total Invoice Amount").
     (r"Total\s+Invoice\s+Amount\s*$", "below", False),
-    (r"(?<![A-Za-z])Total(?!\s+(?:excluding|excl|tax|taxes|taxable|in\s+words))", "last", True),
+    # Not "Total Items / Qty : 17 / 49 ... Shipping Rs 63.56", "TAX TOTAL Rs 99" or "Total in words".
+    (r"(?<![A-Za-z])(?<!tax )Total(?!\s+(?:excluding|excl|tax|taxes|taxable|in\s+words|items|qty|quantity))", "last", True),
     (r"Amount\s+due", "first", False),
 ]
 CURRENCY_IN_LABEL = re.compile(r"Total\s*\((?:`|₹|INR|Rs\.?)\)", re.I)  # "Total (`)  2,192.52"
@@ -36,6 +37,9 @@ DATE_LABELS = [
     r"Document\s+Date\s*:?",
     r"(?<![A-Za-z])Dated\b",
     r"(?<![A-Za-z.])(?<!Due )(?<!Booking )(?<!Travel )(?<!Ack\.)(?<!Ack )Date\s*:",
+    r"(?m)^\s*Date(?=\s{2,}[A-Za-z])",  # a table whose first column is "Date", the row below holds it
+    r"Issue\s+Date\b",
+    r"Transaction\s+Date\b",
 ]
 
 NUMBER_LABELS = [

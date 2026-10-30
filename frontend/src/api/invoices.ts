@@ -168,12 +168,49 @@ function toView(d: InvoicesDto): InvoicesView {
 // ---- Queries and mutations ----------------------------------------------------------------------
 
 /** The invoice rows, their counts and the read job. Polls once a second while a read runs. */
-export function useInvoices(cycleId: string) {
+export function useInvoices(cycleId: string, enabled = true) {
   return useQuery({
     queryKey: cycleKeys.invoices(cycleId),
     queryFn: async () => toView(await apiFetch<InvoicesDto>(`/api/cycles/${cycleId}/invoices`)),
     refetchInterval: (query) => (query.state.data?.job?.status === 'running' ? 1000 : false),
+    enabled,
   })
+}
+
+/**
+ * Reads only the files that were never read, leaving every existing invoice and match alone. Used to add one
+ * invoice to a reconciliation that has already been matched (the drawer's "Upload the invoice").
+ */
+export function useReadNewInvoices(cycleId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async () =>
+      toView(await apiFetch<InvoicesDto>(`/api/cycles/${cycleId}/invoices/extract?new_only=true`, { method: 'POST' })),
+    onSuccess: (view) => {
+      qc.setQueryData(cycleKeys.invoices(cycleId), view)
+      void qc.invalidateQueries({ queryKey: cycleKeys.one(cycleId) }) // the first edit after an export moves the cycle back to matched
+    },
+  })
+}
+
+/** An invoice row of the Invoices step, as the drawer attaches it. Null when nothing usable was read. */
+export function entryAsInvoice(e: InvoiceEntry) {
+  if (!e.invoiceId || e.totalMinor === null || !e.currency || (e.state !== 'ok' && e.state !== 'needs_check')) return null
+  return {
+    id: e.invoiceId,
+    fileId: e.fileId,
+    fileName: e.fileName,
+    vendorKey: e.vendorKey,
+    vendorName: e.vendorName,
+    invoiceNo: e.invoiceNo,
+    orderId: e.orderId,
+    date: e.invoiceDate ?? e.orderDate,
+    currency: e.currency,
+    totalMinor: e.totalMinor,
+    isCreditNote: e.isCreditNote,
+    needsCheck: e.state === 'needs_check',
+    linkedBy: null,
+  }
 }
 
 export function useReadInvoices(cycleId: string) {

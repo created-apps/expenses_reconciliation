@@ -47,14 +47,26 @@ def _is_image(f: dict[str, Any]) -> bool:
     return str(f.get("mime_type") or "").startswith("image/") or f["original_name"].lower().endswith(IMAGE_EXTENSIONS)
 
 
-def start_extract(repo, cycle: dict[str, Any], now: datetime | None = None) -> None:
-    """Checks that reading may start and marks the job as running."""
+def _unread_files(repo, cycle_id: str) -> list[dict[str, Any]]:
+    """Readable files that have no invoice row yet (just uploaded)."""
+    seen = {i["file_id"] for i in repo.list_invoices(cycle_id)}
+    return [f for f in readable_files(repo, cycle_id) if f["id"] not in seen]
+
+
+def start_extract(repo, cycle: dict[str, Any], now: datetime | None = None, new_only: bool = False) -> None:
+    """Checks that reading may start and marks the job as running.
+
+    `new_only` reads just the files that were never read, and leaves every existing invoice (and the
+    matches that use it) alone: used to add one invoice to a reconciliation that has already been matched.
+    """
     now = now or datetime.now(timezone.utc)
     require_confirmed_statement(cycle)
     if job_is_active(cycle, now):
         raise InvoiceError(409, "The invoices are already being read")
     if not readable_files(repo, cycle["id"]):
         raise InvoiceError(409, "Upload the invoices first")
+    if new_only and not _unread_files(repo, cycle["id"]):
+        raise InvoiceError(409, "There are no new invoice files to read")
     repo.update_cycle(cycle["id"], job_fields(INVOICES, "running", 0, "Starting…"))
 
 
@@ -66,8 +78,10 @@ def run_extract(
     actor: str,
     extract_text: Callable[[bytes], str] | None = None,
     vision: VisionClient | None = None,
+    new_only: bool = False,
 ) -> None:
     """The background job. Never raises: a failure is recorded on the cycle as `job_status = failed`.
+    With `new_only`, only files that have no invoice rows yet are read; nothing else is touched.
 
     PDFs with a text layer are read from their text. Images, and PDFs without text, are read by the
     vision model when one is configured (`vision`); otherwise they stay `pending`. A file keeps its
@@ -87,7 +101,10 @@ def run_extract(
             VendorPattern(a["vendor_key"], a.get("invoice_pattern"), a.get("display_name"))
             for a in repo.list_vendor_aliases()
         ]
-        files = [f for f in readable_files(repo, cycle_id) if f["id"] not in _kept_files(repo, cycle_id)]
+        if new_only:
+            files = _unread_files(repo, cycle_id)
+        else:
+            files = [f for f in readable_files(repo, cycle_id) if f["id"] not in _kept_files(repo, cycle_id)]
         total = len(files)
         progress(2, f"Reading invoices… 0 of {total}")
 

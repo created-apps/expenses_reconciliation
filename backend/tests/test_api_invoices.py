@@ -218,6 +218,40 @@ def test_reading_again_replaces_the_rows_instead_of_adding(api):
     assert api.repo.cycles[cid]["status"] == "invoices_extracted"
 
 
+def test_reading_only_the_new_files_leaves_the_existing_invoices_alone(api):
+    cid = new_cycle(api)
+    read(api, cid)
+    before = {i["id"] for i in api.repo.invoices.values()}
+    upload(api, cid, "invoices", [("late.pdf", b"%PDF unreadable", "application/pdf")])
+
+    r = api.post(f"/api/cycles/{cid}/invoices/extract?new_only=true")
+    assert r.status_code == 202, r.text
+    now = {i["id"] for i in api.repo.invoices.values()}
+    assert before <= now and len(now) == len(before) + 1  # every old row kept (same ids), one new row
+    view = listing(api, cid)
+    assert view["job"]["status"] == "done"
+    (late,) = by_file(view)["late.pdf"]
+    assert late["invoice_id"] and late["state"] == "needs_check"
+
+
+def test_reading_only_the_new_files_keeps_the_matches_of_the_old_ones(api):
+    cid = new_cycle(api)
+    read(api, cid)
+    old = next(iter(api.repo.invoices.values()))
+    txn = api.repo.transactions[0]["id"]
+    api.repo.matches.append({"id": "m1", "cycle_id": cid, "transaction_id": txn, "invoice_id": old["id"]})
+    upload(api, cid, "invoices", [("late.pdf", b"%PDF unreadable", "application/pdf")])
+    assert api.post(f"/api/cycles/{cid}/invoices/extract?new_only=true").status_code == 202
+    assert [m["id"] for m in api.repo.matches] == ["m1"]
+
+
+def test_reading_only_the_new_files_with_nothing_new_is_refused(api):
+    cid = new_cycle(api)
+    read(api, cid)
+    r = api.post(f"/api/cycles/{cid}/invoices/extract?new_only=true")
+    assert r.status_code == 409 and "no new invoice files" in r.json()["detail"]
+
+
 def test_a_file_that_cannot_be_downloaded_fails_alone(api, monkeypatch):
     cid = new_cycle(api)
     real_get = api.storage.get

@@ -277,10 +277,13 @@ def test_a_candidate_amount_other_than_the_total_matches_even_when_the_invoice_n
     assert status(run([t], [inv]), t) == "Matched"
 
 
-def test_an_invoice_without_a_vendor_cannot_match_automatically():
+def test_an_invoice_without_a_vendor_is_matched_on_amount_and_date_only_when_one_line_fits():
     t = T(1, "WWW DTDC IN BANGALORE IN", 769)
-    assert status(run([t], [I("v0", None, 769, 1)]), t) == "Missing invoice"
-    assert status(run([t], [I("v1", "dtdc", 769, 1)]), t) == "Matched"  # once a person has chosen the vendor
+    results = run([t], [I("v0", None, 769, 1)])
+    assert status(results, t) == "Matched" and "Vendor taken from the statement line" in results[t.id].note
+    assert status(run([t], [I("v0", None, 770, 1)]), t) == "Missing invoice"  # a different amount is never a match
+    assert status(run([t], [I("v0", None, 769, 20)]), t) == "Missing invoice"  # nor is a date outside the window
+    assert status(run([t], [I("v1", "dtdc", 769, 1)]), t) == "Matched"  # a recognised vendor matches as before
 
 
 # ---- Rule 8: near misses ----------------------------------------------------------------------------------------------

@@ -9,10 +9,8 @@ from pathlib import Path
 
 from app.engine.invoices.types import VendorPattern
 
-CANDIDATES = [
-    Path(__file__).resolve().parents[2] / "supabase" / "migrations" / "0003_recon_seed_vendor_aliases.sql",
-    Path("/supabase/migrations/0003_recon_seed_vendor_aliases.sql"),
-]
+SEED_FILES = ["0003_recon_seed_vendor_aliases.sql", "0005_recon_vendor_aliases_oct.sql"]  # later files overwrite by key
+FOLDERS = [Path(__file__).resolve().parents[2] / "supabase" / "migrations", Path("/supabase/migrations")]
 ROW = re.compile(
     r"\(\s*'(?P<key>\w+)',\s*'(?P<name>[^']*)',\s*(?P<stmt>NULL|'[^']*'),\s*(?P<inv>NULL|'[^']*'),"
     r"\s*'(?P<mode>\w+)',\s*(?P<before>\d+),\s*(?P<after>\d+),\s*true\)"
@@ -24,13 +22,13 @@ def _value(text: str) -> str | None:
 
 
 def seed_rows() -> list[dict]:
-    path = next((p for p in CANDIDATES if p.exists()), None)
-    if path is None:
-        raise FileNotFoundError("0003_recon_seed_vendor_aliases.sql not found")
-    rows = []
-    for m in ROW.finditer(path.read_text(encoding="utf-8")):
-        rows.append(
-            {
+    folder = next((p for p in FOLDERS if (p / SEED_FILES[0]).exists()), None)
+    if folder is None:
+        raise FileNotFoundError(f"{SEED_FILES[0]} not found")
+    rows: dict[str, dict] = {}
+    for name in SEED_FILES:
+        for m in ROW.finditer((folder / name).read_text(encoding="utf-8")):
+            rows[m["key"]] = {
                 "vendor_key": m["key"],
                 "display_name": m["name"],
                 "statement_pattern": _value(m["stmt"]),
@@ -40,8 +38,7 @@ def seed_rows() -> list[dict]:
                 "date_after_days": int(m["after"]),
                 "active": True,
             }
-        )
-    return rows
+    return list(rows.values())
 
 
 def seed_vendors() -> list[VendorPattern]:

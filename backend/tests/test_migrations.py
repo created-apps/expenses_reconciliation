@@ -52,9 +52,17 @@ def test_0004_backfills_only_a_matching_run_and_has_a_verification_and_a_rollbac
     assert "VERIFICATION" in text and "ROLLBACK" in text and "drop column if exists job_kind" in text
 
 
+def test_0005_seeds_only_vendor_rows_idempotently_with_a_verification_and_a_rollback():
+    text = sql("0005_recon_vendor_aliases_oct.sql")
+    body = code(text).lower()
+    assert body.count("insert into recon_vendor_aliases") == 1 and "on conflict (vendor_key) do update" in body
+    assert "delete " not in body and "drop " not in body and "alter " not in body
+    assert "VERIFICATION" in text and "ROLLBACK" in text
+
+
 def test_every_migration_is_numbered_in_order_and_only_touches_recon_or_the_bucket():
     names = sorted(p.name for p in MIGRATIONS.glob("*.sql"))
-    assert [n[:4] for n in names] == ["0001", "0002", "0003", "0004"]
+    assert [n[:4] for n in names] == ["0001", "0002", "0003", "0004", "0005"]
     for name in names:
         body = code(sql(name)).lower()
         assert "payment_requests" not in body and "payment_webhook_events" not in body, name

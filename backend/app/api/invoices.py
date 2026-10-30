@@ -36,17 +36,26 @@ def _load_invoice(repo: SupabaseRepo, invoice_id: UUID) -> dict[str, Any]:
 
 @router.post("/cycles/{cycle_id}/invoices/extract", status_code=status.HTTP_202_ACCEPTED, response_model=InvoicesOut)
 def extract_invoices_endpoint(
-    cycle_id: UUID, user: User, repo: Repo, storage: Storage, vision: Vision, background: BackgroundTasks
+    cycle_id: UUID,
+    user: User,
+    repo: Repo,
+    storage: Storage,
+    vision: Vision,
+    background: BackgroundTasks,
+    new_only: bool = False,
 ) -> dict[str, Any]:
     """Starts reading the invoice files in the background; poll `GET .../invoices` for progress.
-    Refused (409) until the statement is confirmed. Images are read by the AI when it is set up."""
+    Refused (409) until the statement is confirmed. Images are read by the AI when it is set up.
+    `new_only=true` reads only files never read before and leaves existing invoices and matches alone."""
     cycle = load_cycle(repo, cycle_id)
     try:
-        start_extract(repo, cycle)
+        start_extract(repo, cycle, new_only=new_only)
     except ServiceError as exc:
         raise HTTPException(exc.status_code, exc.message) from None
     note_edit(repo, cycle, user.email)  # reading again on an exported reconciliation is an edit
-    background.add_task(run_extract, repo=repo, storage=storage, cycle_id=cycle["id"], actor=user.email, vision=vision)
+    background.add_task(
+        run_extract, repo=repo, storage=storage, cycle_id=cycle["id"], actor=user.email, vision=vision, new_only=new_only
+    )
     return invoices_view(repo, load_cycle(repo, cycle_id))
 
 

@@ -8,6 +8,8 @@ from app.engine.invoices.types import VendorPattern
 # Amazon invoices are recognised by their footer and layout, not by whichever brand a product carries
 # (a Robocraze board on an Amazon invoice is still an Amazon invoice).
 AMAZON_FOOTER = re.compile(r"ASSPL-Amazon|Amazon Seller Services|Amazon Retail India", re.I)
+# "Tax Invoice from LinkedIn Singapore Pte Ltd" / "Receipt from X" (same line only: a column heading is not a name).
+ISSUER = re.compile(r"(?:Invoice|Receipt)[ \t]+from[ \t]+(\S[^\n]{2,80})", re.I)
 
 
 def resolve_vendor_name(name: str, vendors: Iterable[VendorPattern]) -> str | None:
@@ -36,6 +38,16 @@ def detect_vendor(text: str, vendors: Iterable[VendorPattern]) -> str | None:
     """
     if "Order Number" in text and AMAZON_FOOTER.search(text):
         return "amazon"
+    vendors = list(vendors)
+    issuer = ISSUER.search(text[:3000])
+    if issuer:  # "Tax Invoice from LinkedIn Singapore Pte Ltd": the issuer is named, so only that name counts
+        named = _first_match(issuer.group(1), vendors)
+        if named:
+            return named
+    return _first_match(text, vendors)
+
+
+def _first_match(text: str, vendors: list[VendorPattern]) -> str | None:
     best: tuple[int, str] | None = None
     for vendor in vendors:
         if not vendor.invoice_pattern:

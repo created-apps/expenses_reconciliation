@@ -11,6 +11,7 @@ import {
   type ResultLine,
 } from '@/api/results'
 import { DetailSheet } from '@/components/DetailSheet'
+import { UploadForLine } from '@/components/UploadForLine'
 import { Button } from '@/components/ui/button'
 import { errorMessage } from '@/lib/api'
 import { formatDate, formatForeign, formatINR } from '@/lib/format'
@@ -145,6 +146,8 @@ function LineForm({
   const showSuggestions = status === 'Review' && view.suggestions.length > 0
   const suggestionSum = view.suggestions.reduce((acc, s) => acc + (s.currency === 'INR' ? (s.totalMinor ?? 0) : 0), 0)
   const suggestionGap = line.amountPaise - suggestionSum
+  // The invoice for a charge that is under review or has none can be uploaded right here.
+  const canUpload = !line.isCredit && (line.status === 'Review' || line.status === 'Missing invoice')
   const statusOptions = Array.from(new Set<Status>([line.status, ...MANUAL_STATUSES]))
 
   const stage = (invoices: ResultInvoice[]) => {
@@ -312,6 +315,20 @@ function LineForm({
           )}
         </div>
       </section>
+
+      {canUpload && (
+        <section className="border-b border-stone-200 py-4">
+          <h3 className="text-[12px] font-semibold">Don’t have it in the list?</h3>
+          <UploadForLine
+            cycleId={cycleId}
+            isCredit={line.isCredit}
+            onFound={(invoices) => {
+              stage(invoices)
+              setStatus('Matched')
+            }}
+          />
+        </section>
+      )}
 
       <section className="py-4">
         <label className="block text-[12px] font-medium">

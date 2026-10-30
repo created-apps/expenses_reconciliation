@@ -10,7 +10,8 @@ Order of work (a line takes the first rule that applies):
   1. bank charges and 2. payments, 3. reversal pairs, 4. other credits;
   5. Amazon (the Amazon report's payment groups when the debit is inside its payment-date range,
      otherwise sums of invoices in the date window), 6. IndiGo (sums of invoices, one PNR preferred);
-  7. every other vendor, assigned globally by (rank, date gap);
+  7. every other vendor, assigned globally by (rank, date gap); then invoices with no recognised vendor, on
+     exact amount and date alone (one line, one invoice: Matched; shared: Review);
   8. near misses (a USD-only invoice, same-day Amazon credits, within 5%, a possible duplicate charge);
   9. no vendor -> No invoice, 10. otherwise -> Missing invoice.
 A suggestion (Review) reserves its invoices so no other line is offered the same ones.
@@ -275,6 +276,32 @@ class _Matcher:
             and not inv.is_credit_note
         )
 
+    def has_own_match(self, t: Txn) -> bool:
+        """Does this debit have an exact invoice (or exact report group) of its own? Used before any line has been
+        decided, so a refund of the same amount does not take a real purchase for a reversed one."""
+        vendor = self.vendor_of[t.id]
+        if vendor is None or vendor.match_mode == "none":
+            return False
+        if vendor.key == AMAZON and self.csv is not None and self.csv.covers(t.date):
+            return pick_equal_group(t, candidate_groups(t, self.csv.groups, set())) is not None
+        if vendor.match_mode == "subset":
+            pool = self.pool(t, vendor)
+            try:
+                return bool(pool) and bool(exact_subsets([inv.total_minor or 0 for inv in pool], t.amount_paise, max_size=12))
+            except SearchTooLarge:
+                return False
+        low, high = t.date - timedelta(days=vendor.before_days), t.date + timedelta(days=vendor.after_days)
+        for inv in self.invoices:
+            if not self.free(inv, vendor.key):
+                continue
+            dates = [d for d in (inv.invoice_date, inv.order_date) if d]
+            if dates and not any(low <= d <= high for d in dates):
+                continue
+            hit = self.amount_hit(t, inv)
+            if hit and hit[0] == 0:
+                return True
+        return False
+
     # ---- rules 1 to 4 --------------------------------------------------------------------------------------
     def rules_1_to_4(self) -> None:
         for t in self.txns:
@@ -285,20 +312,24 @@ class _Matcher:
             elif "PAYMENT RECEIVED" in t.description.upper():
                 self.set(t, PAYMENT, "Card bill payment")
 
-        # 3. A credit and a debit of the same merchant and amount within 7 days cancel each other.
+        # 3. A credit cancels an EARLIER (or same-day) debit of the same merchant and amount, at most 7 days before it.
+        #    A credit never reverses a later charge. A charge that has its own exact invoice or report group is a real
+        #    purchase and is not cancelled by a refund of the same amount; of several candidates the nearest date wins.
         for credit in [t for t in self.txns if t.is_credit and t.id not in self.results]:
-            for debit in self.txns:
-                if (
-                    not debit.is_credit
-                    and debit.id not in self.results
-                    and _merchant_key(debit.description) == _merchant_key(credit.description)
-                    and debit.amount_paise == credit.amount_paise
-                    and abs((debit.date - credit.date).days) <= REVERSAL_DAYS
-                ):
-                    self.set(debit, REVERSED,
-                             f"Reversed by credit on {_day(credit.date)} (SerNo {credit.ser_no}); no invoice needed")
-                    self.set(credit, REVERSED, f"Reverses the charge on {_day(debit.date)} (SerNo {debit.ser_no})")
-                    break
+            candidates = [
+                debit for debit in self.txns
+                if not debit.is_credit
+                and debit.id not in self.results
+                and _merchant_key(debit.description) == _merchant_key(credit.description)
+                and debit.amount_paise == credit.amount_paise
+                and 0 <= (credit.date - debit.date).days <= REVERSAL_DAYS
+                and not self.has_own_match(debit)
+            ]
+            if candidates:
+                debit = min(candidates, key=lambda d: ((credit.date - d.date).days, d.ser_no))
+                self.set(debit, REVERSED,
+                         f"Reversed by credit on {_day(credit.date)} (SerNo {credit.ser_no}); no invoice needed")
+                self.set(credit, REVERSED, f"Reverses the charge on {_day(debit.date)} (SerNo {debit.ser_no})")
 
         # 4. Every other credit is handled by a person.
         for t in self.open_lines():
@@ -312,8 +343,12 @@ class _Matcher:
             lines.sort(key=lambda t: (t.date, t.amount_paise))
             if vendor.key == AMAZON and self.csv is not None:
                 csv_lines = [t for t in lines if self.csv.covers(t.date)]
+                # Every exact group goes to its charge first; only then may a near miss take a group that is left.
                 for t in csv_lines:
                     self.amazon_csv_line(t)
+                for t in csv_lines:
+                    if t.id not in self.results:
+                        self.amazon_csv_near_line(t)
                 lines = [t for t in lines if t.id not in self.results]
             for pass_no in (1, 2):  # pass 1: one invoice of the exact amount; pass 2: sums of up to 12
                 for t in lines:
@@ -381,9 +416,8 @@ class _Matcher:
 
     def amazon_csv_line(self, t: Txn) -> None:
         """A debit inside the report's payment-date range: only the report's groups are used, never the
-        invoice-only method."""
-        groups = self.csv_groups_for(t)
-        group = pick_equal_group(t, groups)
+        invoice-only method. This pass takes exact groups only; amazon_csv_near_line handles the rest."""
+        group = pick_equal_group(t, self.csv_groups_for(t))
         if group is not None:
             self.used_groups.add(group.reference)
             attached = self.group_invoices(group)
@@ -399,8 +433,10 @@ class _Matcher:
                     f"the invoices add up to {format_inr(total)}"
                 self.set(t, MISSING, f"Amazon report group {group.reference} ({_day(group.payment_date)}) equals the "
                          f"charge, but {detail}.", links, missing)
-            return
-        # No group equals the charge: only the near-miss rule applies, against the report's groups.
+
+    def amazon_csv_near_line(self, t: Txn) -> None:
+        """No group equals the charge: only the near-miss rule applies, against the groups no charge has taken."""
+        groups = self.csv_groups_for(t)
         group = pick_near_group(t, groups)
         if group is not None:
             self.used_groups.add(group.reference)
@@ -436,6 +472,55 @@ class _Matcher:
             if pair.txn.id in self.results or pair.invoice.id in self.used:
                 continue
             self.set(pair.txn, MATCHED, pair.note, [Link(pair.invoice.id, pair.rule)])
+
+    # ---- rule 7, second part: invoices no vendor was found for, matched on amount and date ---------------------------
+    def amount_led(self) -> None:
+        """An invoice with no vendor (or an unrecognised one) is tried against the lines still open: the invoice's
+        total must equal the charge exactly (INR, or USD against the statement's foreign amount) and its date must be
+        inside the rule 7 window. One line and one invoice that fit only each other are Matched, the merchant being
+        taken from the line. Anything shared is a Review, never a guess."""
+        invoices = [
+            (index, inv) for index, inv in enumerate(self.invoices)
+            if inv.vendor_key is None and inv.id not in self.used and not inv.duplicate_of
+            and not inv.is_credit_note and inv.total_minor
+        ]
+        lines = [
+            t for t in self.open_lines()
+            if not t.is_credit and ((v := self.vendor_of[t.id]) is None or v.match_mode == "single")
+        ]
+        pairs: list[_Pair] = []
+        for index, inv in invoices:
+            dates = [d for d in (inv.invoice_date, inv.order_date) if d]
+            for t in lines:
+                if inv.currency == "INR":
+                    fits = inv.total_minor == t.amount_paise
+                else:
+                    fits = t.foreign_currency == inv.currency and t.foreign_amount_minor == inv.total_minor
+                if not fits:
+                    continue
+                gap = min((abs((t.date - d).days) for d in dates), default=None)
+                if dates and (gap is None or gap > NEAR_MISS_DAYS):
+                    continue
+                pairs.append(_Pair(0, gap if gap is not None else 5, t.ser_no, index, t, inv,
+                                   "Exact amount. Vendor taken from the statement line.", "amount_led"))
+        lines_of: dict[str, int] = defaultdict(int)
+        invoices_of: dict[str, int] = defaultdict(int)
+        for pair in pairs:
+            lines_of[pair.invoice.id] += 1
+            invoices_of[pair.txn.id] += 1
+        for pair in sorted(pairs, key=_Pair.order):
+            if pair.txn.id in self.results or pair.invoice.id in self.used:
+                continue
+            if lines_of[pair.invoice.id] == 1 and invoices_of[pair.txn.id] == 1:
+                self.set(pair.txn, MATCHED, pair.note, [Link(pair.invoice.id, pair.rule)])
+        for pair in sorted(pairs, key=_Pair.order):
+            if pair.txn.id in self.results or pair.invoice.id in self.used:
+                continue
+            if lines_of[pair.invoice.id] > 1:
+                note = f"{lines_of[pair.invoice.id]} statement lines fit this invoice (same amount, dates close). Check which one it belongs to."
+            else:
+                note = f"{invoices_of[pair.txn.id]} invoices with no vendor fit this line (same amount, dates close). Check which one it belongs to."
+            self.suggest(pair.txn, [pair.invoice], note, pair.rule)
 
     @staticmethod
     def amount_hit(t: Txn, inv: Inv) -> tuple[int, str, str] | None:
@@ -559,6 +644,7 @@ def match(
     m.rules_1_to_4()
     m.subset_vendors()
     m.other_vendors()
+    m.amount_led()
     m.near_misses()
     m.the_rest()
     return [m.results[t.id] for t in m.txns]

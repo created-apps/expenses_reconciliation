@@ -64,17 +64,16 @@ def test_two_charges_of_the_same_amount_take_two_different_groups():
     assert sorted((o.ser_no, o.order_id) for o in found) == [("S1", "A"), ("S2", "B")]
 
 
-def test_a_near_miss_uses_up_its_group_so_a_later_charge_cannot_take_it_just_as_in_the_matcher():
+def test_an_exact_group_goes_to_its_charge_before_a_near_miss_can_take_it_just_as_in_the_matcher():
     vendors = [Vendor(r["vendor_key"], r["display_name"], r["statement_pattern"], r["match_mode"], r["date_before_days"], r["date_after_days"]) for r in seed_rows()]
     only = group("R1", D(2026, 6, 20), ("A",), 100000)  # 1,000.00
-    # S1 (20/06, 1,020.00) has no equal group, but R1 is within 5%, so the matcher uses R1 up for S1's Review...
-    # ...and S2 (21/06, 1,000.00), which R1 would equal exactly, finds nothing left.
+    # S1 (20/06, 1,020.00) has no equal group, but R1 is within 5%. S2 (21/06, 1,000.00) equals R1 exactly. The exact
+    # charge wins although it comes later: S2 takes R1 and S1 is left with nothing.
     lines = [txn(1, D(2026, 6, 20), 102000), txn(2, D(2026, 6, 21), 100000)]
     results = {r.ser_no: r for r in match(lines, [], vendors, csv=report(only))}
-    assert results["S1"].status == "Review" and results["S2"].status == "Missing invoice" and results["S2"].missing_orders == ()
-    assert orders_to_fetch(lines, report(only), {}, set()) == []  # the list agrees: R1's order "A" is not offered for S2
-    # Without S1 in the way, S2 does take R1 and its order is listed.
-    assert [o.order_id for o in orders_to_fetch(lines[1:], report(only), {}, set())] == ["A"]
+    assert results["S2"].status == "Missing invoice" and results["S2"].missing_orders == ("A",)
+    assert results["S1"].status == "Missing invoice" and results["S1"].missing_orders == () and not results["S1"].links
+    assert [(o.ser_no, o.order_id) for o in orders_to_fetch(lines, report(only), {}, set())] == [("S2", "A")]  # the list agrees
 
 def test_it_picks_exactly_what_the_matcher_picks_and_names_the_same_missing_orders():
     vendors = [Vendor(r["vendor_key"], r["display_name"], r["statement_pattern"], r["match_mode"], r["date_before_days"], r["date_after_days"]) for r in seed_rows()]

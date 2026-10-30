@@ -3,8 +3,8 @@ cover the Amazon Business report.
 
 Pure Python (no database, network or clock). The report says which orders each card payment paid; the
 uploaded invoices say which orders have a file. The charge a payment group belongs to is chosen by the same
-functions the matcher uses (`candidate_groups`, `pick_equal_group`, `pick_near_group`), walking the lines in
-the same order, so this list can never disagree with the "Missing invoice" notes that matching wrote.
+functions the matcher uses (`candidate_groups`, `pick_equal_group`), walking the lines in the same order, so
+this list can never disagree with the "Missing invoice" notes that matching wrote.
 
 Money is integer paise. Only a *missing order* is listed; an order that has an invoice covering only part of
 its amount is counted (`partly_invoiced`) but not listed.
@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from datetime import date
 
 from app.engine.amazon_csv import AmazonRow
-from app.engine.matcher import CsvReport, Txn, candidate_groups, pick_equal_group, pick_near_group
+from app.engine.matcher import CsvReport, Txn, candidate_groups, pick_equal_group
 
 
 @dataclass(frozen=True)
@@ -69,15 +69,12 @@ def orders_to_fetch(
     """
     used: set[str] = set()
     found: list[FetchOrder] = []
-    for t in sorted(lines, key=lambda x: (x.date, x.amount_paise)):  # the matcher's order (the sort is stable)
-        if not report.covers(t.date):
-            continue
-        candidates = candidate_groups(t, report.groups, used)
-        group = pick_equal_group(t, candidates)
+    covered = [t for t in sorted(lines, key=lambda x: (x.date, x.amount_paise)) if report.covers(t.date)]  # the matcher's order
+    # The matcher gives every exact group to its charge first; a near miss can only take a group that is left over,
+    # and lists nothing, so only the exact pass matters here.
+    for t in covered:
+        group = pick_equal_group(t, candidate_groups(t, report.groups, used))
         if group is None:
-            near = pick_near_group(t, candidates)  # a near-miss also uses up its group in the matcher
-            if near is not None:
-                used.add(near.reference)
             continue
         used.add(group.reference)
         for order in group.order_ids:

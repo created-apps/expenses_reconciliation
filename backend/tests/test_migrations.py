@@ -60,9 +60,18 @@ def test_0005_seeds_only_vendor_rows_idempotently_with_a_verification_and_a_roll
     assert "VERIFICATION" in text and "ROLLBACK" in text
 
 
+def test_0006_seeds_manus_and_twilio_only_idempotently_with_a_verification_and_a_rollback():
+    text = sql("0006_recon_vendor_aliases_manus_twilio.sql")
+    body = code(text).lower()
+    assert body.count("insert into recon_vendor_aliases") == 1 and "on conflict (vendor_key) do update" in body
+    assert "'manus'" in body and "'twilio'" in body
+    assert "delete " not in body and "drop " not in body and "alter " not in body
+    assert "VERIFICATION" in text and "ROLLBACK" in text
+
+
 def test_every_migration_is_numbered_in_order_and_only_touches_recon_or_the_bucket():
     names = sorted(p.name for p in MIGRATIONS.glob("*.sql"))
-    assert [n[:4] for n in names] == ["0001", "0002", "0003", "0004", "0005"]
+    assert [n[:4] for n in names] == ["0001", "0002", "0003", "0004", "0005", "0006"]
     for name in names:
         body = code(sql(name)).lower()
         assert "payment_requests" not in body and "payment_webhook_events" not in body, name

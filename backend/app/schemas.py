@@ -175,6 +175,17 @@ class InvoicesOut(BaseModel):
     entries: list[InvoiceEntryOut]
 
 
+class VendorCreate(BaseModel):
+    name: str = Field(max_length=200)
+    # How the vendor appears on the card statement, when that differs from its name (for example "OPENAI.COM").
+    statement_text: str | None = Field(default=None, max_length=200)
+
+
+class VendorOut(BaseModel):
+    key: str
+    name: str
+
+
 class InvoicePatch(BaseModel):
     """Fields a person can correct; only the ones sent are changed (null clears a field)."""
 

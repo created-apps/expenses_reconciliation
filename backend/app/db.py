@@ -136,6 +136,9 @@ class SupabaseRepo:
     def list_vendor_aliases(self) -> list[dict[str, Any]]:
         return self._all(lambda: self.c.table("recon_vendor_aliases").select("*").eq("active", True).order("vendor_key"))
 
+    def add_vendor_alias(self, row: dict[str, Any]) -> dict[str, Any]:
+        return self.c.table("recon_vendor_aliases").insert(row).execute().data[0]
+
     def list_invoices(self, cycle_id: str) -> list[dict[str, Any]]:
         return self._all(
             lambda: self.c.table("recon_invoices").select("*").eq("cycle_id", cycle_id).order("file_id").order("block_index")

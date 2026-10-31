@@ -129,7 +129,7 @@ def test_the_october_aliases_resolve_their_statement_descriptions():
     for description, key in wanted.items():
         found = vendor_for_line(description, VENDORS)
         assert found is not None and found.key == key, description
-    assert len(seed_rows()) == 40
+    assert len(seed_rows()) == 42  # 40 after 0005, plus Manus and Twilio from 0006
 
 
 # ---- 1.4 what is read from the invoice -----------------------------------------------------------------------------------------

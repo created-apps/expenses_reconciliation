@@ -17,6 +17,7 @@ class FakeRepo:
         self.invoices: dict[str, dict[str, Any]] = {}
         self.amazon_rows: list[dict[str, Any]] = []
         self.matches: list[dict[str, Any]] = []
+        self.added_vendors: list[dict[str, Any]] = []
         self._tick = 0
         self._start = datetime.now(timezone.utc)  # timestamps run forward from the real clock
 
@@ -135,7 +136,14 @@ class FakeRepo:
 
     # invoices
     def list_vendor_aliases(self):
-        return seed_rows()  # the vendor table exactly as the migration seeds it
+        # the vendor table exactly as the migrations seed it, plus vendors added by hand
+        return [*seed_rows(), *(dict(v) for v in self.added_vendors)]
+
+    def add_vendor_alias(self, row):
+        if any(v["vendor_key"] == row["vendor_key"] for v in self.list_vendor_aliases()):
+            raise ValueError("duplicate key value violates unique constraint (vendor_key)")
+        self.added_vendors.append(dict(row))
+        return dict(row)
 
     def list_invoices(self, cycle_id):
         rows = [dict(i) for i in self.invoices.values() if i["cycle_id"] == cycle_id]

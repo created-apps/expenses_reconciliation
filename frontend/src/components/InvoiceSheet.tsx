@@ -3,7 +3,14 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { openStoredFile } from '@/api/cycles'
-import { useCorrectInvoice, useNotAnInvoice, useRestoreFile, type InvoiceChanges, type InvoiceEntry } from '@/api/invoices'
+import {
+  useAddVendor,
+  useCorrectInvoice,
+  useNotAnInvoice,
+  useRestoreFile,
+  type InvoiceChanges,
+  type InvoiceEntry,
+} from '@/api/invoices'
 import { DetailSheet } from '@/components/DetailSheet'
 import { ExtractionBadge } from '@/components/StatusBadge'
 import { Banner } from '@/components/Banner'
@@ -11,6 +18,8 @@ import { Button } from '@/components/ui/button'
 import { decimalToMinor, minorToDecimal } from '@/lib/format'
 import { errorMessage } from '@/lib/api'
 import { SOURCE_LABEL } from '@/lib/invoiceLabels'
+
+const ADD_VENDOR = '__add_vendor__' // the select's "+ Add a vendor…" row, never a real vendor key
 
 const inputClass =
   'mt-1 h-8 w-full rounded border border-stone-200 bg-white px-2 text-[12px] outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100 disabled:bg-stone-50 disabled:text-stone-500'
@@ -68,6 +77,12 @@ function Body({
   onClose: () => void
 }) {
   const correct = useCorrectInvoice(cycleId)
+  const addVendor = useAddVendor(cycleId)
+  // A vendor typed in by hand, shown in the list straight away (the list reloads from the server as well).
+  const [extraVendors, setExtraVendors] = useState<{ key: string; name: string }[]>([])
+  const [adding, setAdding] = useState(false)
+  const [newName, setNewName] = useState('')
+  const [newStatement, setNewStatement] = useState('')
   const notInvoice = useNotAnInvoice(cycleId)
   const restoreFile = useRestoreFile(cycleId)
   const [vendorKey, setVendorKey] = useState(entry.vendorKey ?? '')
@@ -102,6 +117,25 @@ function Body({
           onClose()
         },
         onError: (error) => toast.error(errorMessage(error, 'Couldn’t save the invoice.')),
+      },
+    )
+  }
+
+  const vendorOptions = [...vendors, ...extraVendors.filter((x) => !vendors.some((v) => v.key === x.key))]
+
+  function addNewVendor() {
+    addVendor.mutate(
+      { name: newName, statementText: newStatement },
+      {
+        onSuccess: (vendor) => {
+          setExtraVendors((prev) => [...prev, vendor])
+          setVendorKey(vendor.key) // chosen for this invoice; it is saved with the other changes
+          setAdding(false)
+          setNewName('')
+          setNewStatement('')
+          toast(`${vendor.name} added to the vendor list`)
+        },
+        onError: (error) => toast.error(errorMessage(error, 'Couldn’t add the vendor.')),
       },
     )
   }
@@ -183,15 +217,62 @@ function Body({
           <div className="mt-5 grid grid-cols-2 gap-3">
             <label className="text-[11px] font-medium text-stone-600">
               Vendor
-              <select className={inputClass} value={vendorKey} disabled={!editable} onChange={(e) => setVendorKey(e.target.value)}>
+              <select
+                className={inputClass}
+                value={vendorKey}
+                disabled={!editable}
+                onChange={(e) => {
+                  if (e.target.value === ADD_VENDOR) setAdding(true)
+                  else setVendorKey(e.target.value)
+                }}
+              >
                 <option value="">Not recognised</option>
-                {vendors.map((v) => (
+                {vendorOptions.map((v) => (
                   <option key={v.key} value={v.key}>
                     {v.name}
                   </option>
                 ))}
+                <option value={ADD_VENDOR}>+ Add a vendor…</option>
               </select>
             </label>
+            {adding && (
+              <div className="col-span-2 rounded-md border border-stone-200 bg-stone-50 p-3">
+                <p className="text-[12px] font-medium text-stone-800">Add a vendor to the list</p>
+                <label className="mt-2 block text-[11px] font-medium text-stone-600">
+                  Vendor name
+                  <input
+                    className={inputClass}
+                    value={newName}
+                    maxLength={60}
+                    autoFocus
+                    placeholder="For example: Zoom"
+                    onChange={(e) => setNewName(e.target.value)}
+                  />
+                </label>
+                <label className="mt-2 block text-[11px] font-medium text-stone-600">
+                  As it appears on the card statement <span className="font-normal text-stone-400">(optional)</span>
+                  <input
+                    className={inputClass}
+                    value={newStatement}
+                    maxLength={60}
+                    placeholder="Leave empty if it is the same as the name"
+                    onChange={(e) => setNewStatement(e.target.value)}
+                  />
+                </label>
+                <p className="mt-2 text-[11px] text-stone-500">
+                  The vendor stays in the list for every reconciliation. Run matching again so statement lines with this
+                  name pick up its invoices.
+                </p>
+                <div className="mt-3 flex justify-end gap-2">
+                  <Button variant="secondary" onClick={() => setAdding(false)} disabled={addVendor.isPending}>
+                    Cancel
+                  </Button>
+                  <Button onClick={addNewVendor} disabled={addVendor.isPending || newName.trim().length < 2}>
+                    {addVendor.isPending ? 'Adding…' : 'Add vendor'}
+                  </Button>
+                </div>
+              </div>
+            )}
             <label className="text-[11px] font-medium text-stone-600">
               Invoice no.
               <input className={inputClass} value={invoiceNo} disabled={!editable} onChange={(e) => setInvoiceNo(e.target.value)} />

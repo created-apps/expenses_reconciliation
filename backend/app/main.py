@@ -7,7 +7,7 @@ from postgrest.exceptions import APIError
 from storage3.exceptions import StorageApiError
 
 from app import __version__
-from app.api import amazon, cycles, export, files, invoices, matching, me, results, statement
+from app.api import amazon, cycles, export, files, invoices, matching, me, results, statement, vendors
 from app.config import get_settings
 
 settings = get_settings()
@@ -55,5 +55,6 @@ api.include_router(amazon.router)
 api.include_router(matching.router)
 api.include_router(results.router)
 api.include_router(export.router)
+api.include_router(vendors.router)
 
 app.include_router(api)

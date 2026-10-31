@@ -224,6 +224,24 @@ export function useReadInvoices(cycleId: string) {
   })
 }
 
+/**
+ * Adds a vendor that is not in the list (or returns the existing one with that name). `statementText` is how the
+ * vendor appears on the card statement, when that differs from its name. Statement lines pick the vendor up
+ * the next time matching is run.
+ */
+export function useAddVendor(cycleId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ name, statementText }: { name: string; statementText?: string }) =>
+      apiFetch<{ key: string; name: string }>('/api/vendors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, statement_text: statementText?.trim() || null }),
+      }),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: cycleKeys.invoices(cycleId) }), // the list of vendors
+  })
+}
+
 export function useCorrectInvoice(cycleId: string) {
   const qc = useQueryClient()
   return useMutation({

@@ -9,7 +9,7 @@ from pathlib import Path
 
 from app.engine.invoices.types import VendorPattern
 
-SEED_FILES = ["0003_recon_seed_vendor_aliases.sql", "0005_recon_vendor_aliases_oct.sql"]  # later files overwrite by key
+SEED_FILES = ["0003_recon_seed_vendor_aliases.sql", "0005_recon_vendor_aliases_oct.sql", "0006_recon_vendor_aliases_manus_twilio.sql"]  # later files overwrite by key
 FOLDERS = [Path(__file__).resolve().parents[2] / "supabase" / "migrations", Path("/supabase/migrations")]
 ROW = re.compile(
     r"\(\s*'(?P<key>\w+)',\s*'(?P<name>[^']*)',\s*(?P<stmt>NULL|'[^']*'),\s*(?P<inv>NULL|'[^']*'),"
